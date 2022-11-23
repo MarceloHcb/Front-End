@@ -30,9 +30,10 @@ export async function drawCard() {
   if (playersScore[1] >= 21) {
     stopGame();
   }
+  await dealerTurn();
 }
 
-function addCardToPlayer(card, playerNumber) {
+async function  addCardToPlayer(card, playerNumber) {
   const img = document.createElement('img');
   img.src = card.image;
   img.alt = `${card.value} of ${card.suit}`;
@@ -46,7 +47,7 @@ function addCardToPlayer(card, playerNumber) {
   } else {
     playersScore[playerNumber] += Number(card.value);
   }
-
+ 
   const playerScore = document.querySelector(`.player-${playerNumber}.score`);
   playerScore.textContent = playersScore[playerNumber];
 }
@@ -61,12 +62,8 @@ export async function stopGame() {
     return showResult('lose');
   }
 
-  await dealerTurn();
-  // console.log('player 1', playersScore[1]);
-  // console.log('player 2', playersScore[2]);
-
-  // PLAYER 1 = 19
-  // PLAYER 2 = 12
+  
+  
   if (playersScore[1] > playersScore[2] || playersScore[2] > 21) {
     showResult('win');
   } else {
@@ -81,18 +78,23 @@ function showResult(result) { // win (ganhei) or lose (perdi)
   resultElement.classList.remove('hidden');
 }
 
-// adversário DEALER
+
 async function dealerTurn() {
   // Eu vou forçar o oponente a SEMPRE comprar 3 cartas...
-  const promises = [drawNewCard(deckId), drawNewCard(deckId), drawNewCard(deckId)];
-  console.log(promises);
+  // const promises = [drawNewCard(deckId), drawNewCard(deckId), drawNewCard(deckId)];
+  // const promises =[drawNewCard(deckId)]
+  // console.log(promises);
 
-  const results = await Promise.all(promises);
-  console.log(results);
+  // const results = await Promise.all(promises);
+  // console.log(results);
 
-  results.forEach((card) => {
-    addCardToPlayer(card, 2);
-  });
+  const card = await drawNewCard(deckId);
+  addCardToPlayer(card, 2);
+
+  if (playersScore[2] >= 21) {
+    stopGame();
+  }
+
 }
 
 function restartGame() {
